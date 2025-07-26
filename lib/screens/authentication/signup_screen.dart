@@ -35,11 +35,24 @@ class _SignupScreenState extends State<SignupScreen> {
           email: _emailController.text,
           password: _passwordController.text,
         );
-        // TODO: Navigate after successful sign-up (e.g., back to login or to home)
-        print('User registered successfully!'); // Keep print for success for now
-         if (mounted) {
-           context.go('/home'); // Example: Navigate to home after signup
-         }
+        
+        // Clear the session by signing out the user
+        await _auth.signOut();
+        
+        print('User registered successfully!');
+        
+        if (mounted) {
+          // Show success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Account created successfully! Please login.'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          
+          // Redirect to login screen
+          context.go('/'); // Navigate back to the login screen
+        }
       } on FirebaseAuthException catch (e) {
         String message;
         if (e.code == 'weak-password') {
@@ -48,6 +61,7 @@ class _SignupScreenState extends State<SignupScreen> {
           message = 'The account already exists for that email.';
         }
          else {
+          // print(e);
           message = 'Sign up failed. Please try again.'; // Generic message
         }
          if (mounted) {

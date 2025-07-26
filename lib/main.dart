@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart'; // Make sure this file is generated after configuring Firebase
 
 import 'package:myapp/theme_provider.dart'; // Assuming you have a theme_provider.dart
+import 'package:myapp/providers/role_provider.dart';
 import 'package:myapp/auth_gate.dart'; // We will create this file for authentication handling
 import 'package:myapp/screens/home/home_screen.dart';
 import 'package:myapp/screens/emergency_contacts/emergency_contacts_screen.dart';
@@ -13,7 +14,10 @@ import 'package:myapp/screens/history/history_screen.dart';
 import 'package:myapp/screens/settings/settings_screen.dart';
 import 'package:myapp/screens/prediction_message/prediction_message_screen.dart';
 import 'package:myapp/screens/event_detail/event_detail_screen.dart';
-import 'package:myapp/screens/authentication/signup_screen.dart'; // Import the signup screen
+import 'package:myapp/screens/authentication/signup_screen.dart';
+import 'package:myapp/screens/admin/admin_dashboard_screen.dart';
+import 'package:myapp/screens/commander/commander_dashboard_screen.dart';
+import 'package:myapp/screens/user/user_dashboard_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,8 +25,11 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => ThemeProvider(), // Your ThemeProvider
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
+        ChangeNotifierProvider(create: (context) => RoleProvider()),
+      ],
       child: MyApp(),
     ),
   );
@@ -74,10 +81,28 @@ final GoRouter _router = GoRouter(
         return EventDetailScreen(eventId: id);
       },
     ),
-    GoRoute( // Add the signup route
+    GoRoute(
       path: '/signup',
       builder: (BuildContext context, GoRouterState state) {
         return const SignupScreen();
+      },
+    ),
+    GoRoute(
+      path: '/admin_dashboard',
+      builder: (BuildContext context, GoRouterState state) {
+        return const AdminDashboardScreen();
+      },
+    ),
+    GoRoute(
+      path: '/commander_dashboard',
+      builder: (BuildContext context, GoRouterState state) {
+        return const CommanderDashboardScreen();
+      },
+    ),
+    GoRoute(
+      path: '/user_dashboard',
+      builder: (BuildContext context, GoRouterState state) {
+        return const UserDashboardScreen();
       },
     ),
   ],
@@ -93,6 +118,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       routerConfig: _router,
       title: 'Incident Reporter App',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
